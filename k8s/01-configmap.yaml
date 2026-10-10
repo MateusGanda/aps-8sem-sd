@@ -1,0 +1,16 @@
+# Configuração comum às três APIs (nada sensível aqui — usuários e senhas ficam no Secret).
+# As chaves viram variáveis de ambiente via envFrom; "__" é o separador de seção do .NET.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aps-config
+  namespace: aps
+data:
+  BANCO_HOST: "postgres"                    # nomes dos Services (os mesmos do Compose)
+  CACHE_HOST: "redis"
+  FILA_HOST: "rabbitmq"
+  Cache__TtlSeconds: "10"                   # segundos que uma consulta agregada fica no cache
+  Alerts__Pm25Limit: "25"                   # qualidade do ar
+  Alerts__Pm25ConsecutiveReadings: "3"
+  Alerts__OverflowLevelCm: "300"            # alagamento
+  Alerts__MinInversionGradientC: "0"        # inversão térmica

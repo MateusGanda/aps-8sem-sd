@@ -9,7 +9,7 @@ namespace ThermalInversion.Api.Services;
 /// <summary>
 /// Regra: temperatura superior maior que a da superfície = inversão térmica detectada.
 /// O alerta é gerado quando a inversão COMEÇA (leitura anterior da estação sem inversão ou inexistente).
-/// Por enquanto roda de forma síncrona dentro do POST; numa etapa futura vira um consumidor de fila.
+/// Roda no consumidor da fila (Messaging/AlertConsumer); o POST só publica a leitura.
 /// </summary>
 public class AlertService(ThermalInversionDbContext db, IOptions<AlertOptions> options, ILogger<AlertService> logger)
 {

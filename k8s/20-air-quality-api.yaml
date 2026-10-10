@@ -1,0 +1,83 @@
+# API air-quality: serviço SEM estado -> Deployment (2 réplicas) + Service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: air-quality-api
+  namespace: aps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: air-quality-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1            # até 1 pod a mais durante a troca
+      maxUnavailable: 0      # nenhum a menos
+  template:
+    metadata:
+      labels:
+        app: air-quality-api
+    spec:
+      containers:
+        - name: api
+          image: aps-sd/air-quality-api:1.1.0       # tag fixa; importada com k3d image import
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: aps-config           # hosts, tempo do cache e regras de alerta
+          env:
+            - name: PATH_BASE              # prefixo que o gateway usa para este serviço
+              value: "/air-quality"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: { name: banco-credenciais, key: POSTGRES_USER }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: banco-credenciais, key: POSTGRES_PASSWORD }
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef: { name: banco-credenciais, key: RABBITMQ_USER }
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: banco-credenciais, key: RABBITMQ_PASSWORD }
+            - name: ConnectionStrings__Default
+              value: "Host=$(BANCO_HOST);Port=5432;Database=air_quality;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+            - name: ConnectionStrings__Redis
+              value: "$(CACHE_HOST):6379,abortConnect=false,connectTimeout=1000,syncTimeout=1000"
+            - name: ConnectionStrings__RabbitMq
+              value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASSWORD)@$(FILA_HOST):5672"
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }   # sem requests de CPU o HPA não funciona
+            limits:   { cpu: 500m, memory: 320Mi }
+          # A API só abre a porta depois de criar o banco/tabelas: a startup dá até 5 min
+          # para isso (o cluster pode estar baixando a imagem do banco), sem a liveness reiniciar o contêiner.
+          startupProbe:
+            httpGet: { path: /health/live, port: 8080 }
+            periodSeconds: 3
+            failureThreshold: 100
+          # Liveness: só o processo. 3 falhas seguidas -> reinicia o contêiner.
+          livenessProbe:
+            httpGet: { path: /health/live, port: 8080 }
+            periodSeconds: 10
+            failureThreshold: 3
+          # Readiness: consulta o banco A CADA chamada. 2 falhas -> sai do Service, sem reiniciar.
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 8080 }
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: air-quality-api
+  namespace: aps
+spec:
+  selector:
+    app: air-quality-api
+  ports:
+    - port: 80
+      targetPort: 8080

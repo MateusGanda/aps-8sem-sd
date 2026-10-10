@@ -1,5 +1,6 @@
 using AirQuality.Api.Data;
 using AirQuality.Api.Dtos;
+using AirQuality.Api.Messaging;
 using AirQuality.Api.Models;
 using AirQuality.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace AirQuality.Api.Controllers;
 
 [ApiController]
 [Route(ApiRoutes.Base + "/particulate")]
-public class ParticulateController(AirQualityDbContext db, AlertService alerts) : ControllerBase
+public class ParticulateController(AirQualityDbContext db, AlertService alerts, ReadingQueue queue) : ControllerBase
 {
     // POST /api/v1/air-quality/particulate
     [HttpPost]
@@ -27,7 +28,10 @@ public class ParticulateController(AirQualityDbContext db, AlertService alerts) 
 
         db.ParticulateReadings.Add(reading);
         await db.SaveChangesAsync(ct);
-        await alerts.EvaluateParticulateAsync(reading, ct);
+        // O alerta é avaliado fora do POST, pelo consumidor da fila.
+        // Se a fila estiver indisponível, avalia aqui mesmo para não perder o alerta.
+        if (!queue.TryPublish(reading.Id))
+            await alerts.EvaluateParticulateAsync(reading, ct);
 
         return CreatedAtAction(nameof(GetById), new { id = reading.Id }, reading);
     }

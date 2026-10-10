@@ -9,7 +9,7 @@ namespace AirQuality.Api.Services;
 /// <summary>
 /// Regra: PM2.5 acima do limite por N leituras seguidas da mesma estação.
 /// O alerta é gerado uma vez por episódio (quando a sequência completa N), não a cada leitura.
-/// Por enquanto roda de forma síncrona dentro do POST; numa etapa futura vira um consumidor de fila.
+/// Roda no consumidor da fila (Messaging/AlertConsumer); o POST só publica a leitura.
 /// </summary>
 public class AlertService(AirQualityDbContext db, IOptions<AlertOptions> options, ILogger<AlertService> logger)
 {
