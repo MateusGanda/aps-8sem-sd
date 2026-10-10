@@ -165,6 +165,8 @@ python tools/load-generator/generator.py --rate 100 --duration 60 \
 | `k8s/40-hpa.yaml` | HPA da API de qualidade do ar (2 a 10 réplicas, CPU a 50%) |
 | `secret.example.yaml` | modelo do Secret — documentação, **não** é aplicado |
 
+As evidências dos experimentos (saídas reais) e o diagrama de implantação estão em [`docs/etapa3/`](docs/etapa3/README.md).
+
 `GET /<prefixo>/processar?n=2000000` gasta CPU de propósito, para acionar o HPA. Para limpar: `kubectl delete namespace aps` (apaga a aplicação e os volumes) e `k3d cluster delete aps`.
 
 ## Cache e fila
@@ -193,6 +195,7 @@ Por isso o `/health/ready` verifica **só o banco**: sem cache ou sem fila a API
 aps-8sem-sd/
 ├── docker-compose.yml          # sobe a pilha inteira
 ├── k8s/                        # manifestos do Kubernetes (Etapa 3)
+├── docs/etapa3/                # evidências dos experimentos e diagrama de implantação
 ├── secret.example.yaml         # modelo do Secret (o real vem do .env)
 ├── .env.example                # modelo das variáveis (o .env real não vai pro git)
 ├── ApsSd.sln                   # abre as 3 APIs juntas no Visual Studio/Rider

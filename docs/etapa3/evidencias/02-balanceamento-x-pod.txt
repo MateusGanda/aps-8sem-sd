@@ -1,0 +1,27 @@
+# Passo 6 - distribuição das requisições por pod (cabeçalho X-Pod)
+# Coletado em 2026-10-10 02:21:13 (cluster k3d 'aps', namespace 'aps')
+
+$ curl -si http://localhost:8081/air-quality/health/live | grep -iE '^HTTP|x-pod|x-versao'
+HTTP/1.1 200 OK
+X-Pod: air-quality-api-68cd867567-x44wj
+X-Versao: 1.1.0
+
+$ # 20 requisições em http://localhost:8081/air-quality/health/live, contadas por X-Pod
+     10 X-Pod: air-quality-api-68cd867567-kxx82
+     10 X-Pod: air-quality-api-68cd867567-x44wj
+
+$ # 20 requisições em http://localhost:8081/flooding/health/live, contadas por X-Pod
+     10 X-Pod: flooding-api-64c64bf-9vtbf
+     10 X-Pod: flooding-api-64c64bf-rq55w
+
+$ # 20 requisições em http://localhost:8081/thermal-inversion/health/live, contadas por X-Pod
+     10 X-Pod: thermal-inversion-api-7467c478df-72cpz
+     10 X-Pod: thermal-inversion-api-7467c478df-kffl8
+
+$ # 20 requisições no cliente web (http://localhost:8081/), contadas por X-Pod
+     10 X-Pod: web-client-658c54cf49-4rnjz
+     10 X-Pod: web-client-658c54cf49-xfk8m
+
+$ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8081/api/v1/air-quality/particulate   # sem o prefixo do gateway
+404
+

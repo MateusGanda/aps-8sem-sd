@@ -1,0 +1,31 @@
+# Passo 7 - linha do tempo de um pod apagado até o substituto ficar 1/1
+# Coletado em 2026-10-10 02:20:08 (cluster k3d 'aps', namespace 'aps')
+
+$ kubectl get pods -n aps -l app=flooding-api -o wide
+NAME                         READY   STATUS    RESTARTS   AGE   IP           NODE               NOMINATED NODE   READINESS GATES
+flooding-api-64c64bf-5cfdk   1/1     Running   0          25m   10.42.1.12   k3d-aps-agent-1    <none>           <none>
+flooding-api-64c64bf-9vtbf   1/1     Running   0          32m   10.42.2.8    k3d-aps-server-0   <none>           <none>
+
+$ kubectl get pods -n aps -l app=flooding-api -w        # em outro terminal: kubectl delete pod -n aps flooding-api-64c64bf-5cfdk
+# (a primeira coluna é a hora em que cada linha apareceu)
+02:20:10.491  NAME                         READY   STATUS    RESTARTS   AGE
+02:20:10.607  flooding-api-64c64bf-5cfdk   1/1     Running   0          25m
+02:20:10.707  flooding-api-64c64bf-9vtbf   1/1     Running   0          32m
+02:20:14.321  >>> kubectl delete pod -n aps flooding-api-64c64bf-5cfdk
+02:20:14.635  flooding-api-64c64bf-5cfdk   1/1     Terminating   0          25m
+02:20:14.747  flooding-api-64c64bf-5cfdk   1/1     Terminating   0          25m
+02:20:14.992  flooding-api-64c64bf-rq55w   0/1     Pending       0          0s
+02:20:15.105  flooding-api-64c64bf-rq55w   0/1     Pending       0          0s
+02:20:15.226  flooding-api-64c64bf-rq55w   0/1     ContainerCreating   0          0s
+02:20:15.874  flooding-api-64c64bf-5cfdk   0/1     Completed           0          25m
+02:20:16.679  flooding-api-64c64bf-rq55w   0/1     Running             0          2s
+02:20:16.794  flooding-api-64c64bf-5cfdk   0/1     Completed           0          25m
+02:20:16.930  flooding-api-64c64bf-5cfdk   0/1     Completed           0          25m
+02:20:21.487  flooding-api-64c64bf-rq55w   0/1     Running             0          7s
+02:20:21.615  flooding-api-64c64bf-rq55w   1/1     Running             0          7s
+
+$ kubectl get pods -n aps -l app=flooding-api -o wide
+NAME                         READY   STATUS    RESTARTS   AGE   IP           NODE               NOMINATED NODE   READINESS GATES
+flooding-api-64c64bf-9vtbf   1/1     Running   0          33m   10.42.2.8    k3d-aps-server-0   <none>           <none>
+flooding-api-64c64bf-rq55w   1/1     Running   0          37s   10.42.1.35   k3d-aps-agent-1    <none>           <none>
+

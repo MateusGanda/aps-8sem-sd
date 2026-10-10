@@ -1,0 +1,97 @@
+# Passo 10 - escala automática (HPA) sob carga de CPU
+# Coletado em 2026-10-10 02:10:38 (cluster k3d 'aps', namespace 'aps')
+
+$ kubectl apply -f k8s/40-hpa.yaml
+horizontalpodautoscaler.autoscaling/air-quality-api created
+
+$ kubectl top pod -n aps
+NAME                                     CPU(cores)   MEMORY(bytes)   
+air-quality-api-68cd867567-kxx82         3m           96Mi            
+air-quality-api-68cd867567-x44wj         2m           88Mi            
+flooding-api-64c64bf-5cfdk               2m           84Mi            
+flooding-api-64c64bf-9vtbf               2m           95Mi            
+postgres-0                               14m          27Mi            
+rabbitmq-0                               288m         137Mi           
+redis-86f665b87d-jfrtr                   8m           4Mi             
+thermal-inversion-api-7467c478df-72cpz   2m           97Mi            
+thermal-inversion-api-7467c478df-kffl8   2m           95Mi            
+web-client-658c54cf49-4rnjz              1m           16Mi            
+web-client-658c54cf49-xfk8m              1m           12Mi            
+
+$ kubectl top node
+NAME               CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+k3d-aps-agent-0    222m         1%       759Mi           9%          
+k3d-aps-agent-1    54m          0%       476Mi           6%          
+k3d-aps-server-0   131m         0%       1236Mi          15%         
+
+$ kubectl get hpa -n aps -w        # em outro terminal: 8 laços por 150 s em http://localhost:8081/air-quality/processar?n=20000000
+# (a primeira coluna é a hora em que cada linha apareceu)
+02:13:35.986  NAME              REFERENCE                    TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+02:13:36.109  air-quality-api   Deployment/air-quality-api   cpu: 2%/50%   2         10        2          51s
+02:13:41.711  >>> início da carga
+02:13:44.901  air-quality-api   Deployment/air-quality-api   cpu: 3%/50%   2         10        2          60s
+02:13:59.914  air-quality-api   Deployment/air-quality-api   cpu: 202%/50%   2         10        2          75s
+02:14:15.132  air-quality-api   Deployment/air-quality-api   cpu: 490%/50%   2         10        4          90s
+02:14:30.205  air-quality-api   Deployment/air-quality-api   cpu: 464%/50%   2         10        8          105s
+02:14:44.984  air-quality-api   Deployment/air-quality-api   cpu: 376%/50%   2         10        10         2m
+02:15:00.029  air-quality-api   Deployment/air-quality-api   cpu: 304%/50%   2         10        10         2m15s
+02:15:15.113  air-quality-api   Deployment/air-quality-api   cpu: 263%/50%   2         10        10         2m30s
+02:15:32.471  air-quality-api   Deployment/air-quality-api   cpu: 233%/50%   2         10        10         2m45s
+02:15:45.034  air-quality-api   Deployment/air-quality-api   cpu: 218%/50%   2         10        10         3m
+02:16:00.102  air-quality-api   Deployment/air-quality-api   cpu: 221%/50%   2         10        10         3m15s
+02:16:14.811  >>> fim da carga
+02:16:15.047  air-quality-api   Deployment/air-quality-api   cpu: 222%/50%   2         10        10         3m30s
+02:16:30.049  air-quality-api   Deployment/air-quality-api   cpu: 90%/50%    2         10        10         3m45s
+02:16:45.070  air-quality-api   Deployment/air-quality-api   cpu: 10%/50%    2         10        10         4m
+
+$ kubectl top pod -n aps -l app=air-quality-api        # medido durante a carga
+NAME                               CPU(cores)   MEMORY(bytes)   
+air-quality-api-68cd867567-kxx82   215m         97Mi            
+air-quality-api-68cd867567-pmwxc   233m         62Mi            
+air-quality-api-68cd867567-r268l   264m         62Mi            
+air-quality-api-68cd867567-r9sdr   229m         63Mi            
+air-quality-api-68cd867567-rk5n7   266m         62Mi            
+air-quality-api-68cd867567-rpgrm   253m         63Mi            
+air-quality-api-68cd867567-thbn5   225m         66Mi            
+air-quality-api-68cd867567-tl5kw   221m         61Mi            
+air-quality-api-68cd867567-v6cpm   226m         62Mi            
+air-quality-api-68cd867567-x44wj   202m         88Mi            
+
+$ kubectl describe hpa air-quality-api -n aps
+Name:                                                  air-quality-api
+Namespace:                                             aps
+Labels:                                                <none>
+Annotations:                                           <none>
+CreationTimestamp:                                     Sat, 10 Oct 2026 02:12:44 -0300
+Reference:                                             Deployment/air-quality-api
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  10% (10m) / 50%
+Min replicas:                                          2
+Max replicas:                                          10
+Deployment pods:                                       10 current / 10 desired
+Conditions:
+  Type            Status  Reason               Message
+  ----            ------  ------               -------
+  AbleToScale     True    ScaleDownStabilized  recent recommendations were higher than current one, applying the highest recent recommendation
+  ScalingActive   True    ValidMetricFound     the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  True    TooManyReplicas      the desired replica count is more than the maximum replica count
+Events:
+  Type    Reason             Age    From                       Message
+  ----    ------             ----   ----                       -------
+  Normal  SuccessfulRescale  2m47s  horizontal-pod-autoscaler  New size: 4; reason: cpu resource utilization (percentage of request) above target
+  Normal  SuccessfulRescale  2m32s  horizontal-pod-autoscaler  New size: 8; reason: cpu resource utilization (percentage of request) above target
+  Normal  SuccessfulRescale  2m17s  horizontal-pod-autoscaler  New size: 10; reason: cpu resource utilization (percentage of request) above target
+
+$ kubectl get pods -n aps -l app=air-quality-api -o wide
+NAME                               READY   STATUS    RESTARTS   AGE     IP           NODE               NOMINATED NODE   READINESS GATES
+air-quality-api-68cd867567-kxx82   1/1     Running   0          29m     10.42.2.7    k3d-aps-server-0   <none>           <none>
+air-quality-api-68cd867567-pmwxc   1/1     Running   0          2m32s   10.42.0.23   k3d-aps-agent-0    <none>           <none>
+air-quality-api-68cd867567-r268l   1/1     Running   0          2m17s   10.42.1.34   k3d-aps-agent-1    <none>           <none>
+air-quality-api-68cd867567-r9sdr   1/1     Running   0          2m32s   10.42.2.20   k3d-aps-server-0   <none>           <none>
+air-quality-api-68cd867567-rk5n7   1/1     Running   0          2m17s   10.42.0.24   k3d-aps-agent-0    <none>           <none>
+air-quality-api-68cd867567-rpgrm   1/1     Running   0          2m46s   10.42.1.32   k3d-aps-agent-1    <none>           <none>
+air-quality-api-68cd867567-thbn5   1/1     Running   0          2m46s   10.42.1.31   k3d-aps-agent-1    <none>           <none>
+air-quality-api-68cd867567-tl5kw   1/1     Running   0          2m32s   10.42.1.33   k3d-aps-agent-1    <none>           <none>
+air-quality-api-68cd867567-v6cpm   1/1     Running   0          2m32s   10.42.2.21   k3d-aps-server-0   <none>           <none>
+air-quality-api-68cd867567-x44wj   1/1     Running   0          25m     10.42.0.15   k3d-aps-agent-0    <none>           <none>
+

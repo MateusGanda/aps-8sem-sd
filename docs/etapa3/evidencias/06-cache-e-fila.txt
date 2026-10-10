@@ -1,0 +1,31 @@
+# Cache (Redis) e fila (RabbitMQ)
+# Coletado em 2026-10-10 02:20:51 (cluster k3d 'aps', namespace 'aps')
+
+$ # 4 chamadas seguidas à consulta agregada (.../areas/CENTRO/average): X-Cache e o pod que respondeu
+X-Cache: MISS X-Pod: air-quality-api-68cd867567-x44wj
+X-Cache: HIT X-Pod: air-quality-api-68cd867567-kxx82
+X-Cache: HIT X-Pod: air-quality-api-68cd867567-x44wj
+X-Cache: HIT X-Pod: air-quality-api-68cd867567-kxx82
+
+$ kubectl exec -n aps deploy/redis -- redis-cli keys '*'
+air-quality:areas:CENTRO:average:24
+
+$ kubectl exec -n aps deploy/redis -- redis-cli ttl air-quality:areas:CENTRO:average:24        # segundos até expirar
+9
+
+$ kubectl exec -n aps rabbitmq-0 -- rabbitmqctl -q list_queues name messages consumers
+name	messages	consumers
+air-quality.particulate-readings	0	2
+thermal-inversion.temperature-profile-readings	0	2
+flooding.water-level-readings	0	2
+
+$ # 3 leituras de PM2.5 acima do limite na estação EST-EVID-022107 -> 1 alerta, gerado pelo consumidor da fila
+POST 201
+POST 201
+POST 201
+
+$ curl -s 'http://localhost:8081/air-quality/api/v1/air-quality/alerts?stationId=EST-EVID-022107'
+[{"id":5,"type":"PM25_ABOVE_LIMIT","stationId":"EST-EVID-022107","areaId":"EVIDENCIA","value":61.5,"threshold":25,"message":"PM2.5 acima de 25 µg/m³ por 3 leituras seguidas na estação EST-EVID-022107.","timestamp":"2026-10-10T05:21:08.747767+00:00","createdAt":"2026-10-10T05:21:08.763857+00:00"}]
+$ kubectl logs -n aps -l app=air-quality-api --tail=400 --prefix | grep -E 'EST-EVID-022107'
+[pod/air-quality-api-68cd867567-x44wj/api]       Alerta PM25_ABOVE_LIMIT na estação EST-EVID-022107: PM2.5 = 61.5
+

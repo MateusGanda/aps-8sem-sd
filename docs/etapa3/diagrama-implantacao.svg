@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 900" width="1300" height="900" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5f6b7a"/></marker></defs>
+<rect width="1300" height="900" fill="#ffffff"/>
+<text x="20" y="34" font-size="21" font-weight="600" fill="#17202a">Diagrama de implantação — cluster Kubernetes (k3d “aps”, namespace “aps”)</text>
+<text x="20" y="56" font-size="13" fill="#5f6b7a">Cada caixa colorida é um pod, desenhado dentro do nó em que está rodando. Posições lidas do cluster em 10/10/2026 02:21.</text>
+<rect x="610" y="78" width="216" height="728" rx="8" fill="#f3f5f8" stroke="#c9d1da"/>
+<text x="718.0" y="102" font-size="14" font-weight="600" fill="#17202a" text-anchor="middle">Nó k3d-aps-server-0</text>
+<text x="718.0" y="120" font-size="11.5" fill="#5f6b7a" text-anchor="middle">plano de controle + trabalho</text>
+<rect x="838" y="78" width="216" height="728" rx="8" fill="#f3f5f8" stroke="#c9d1da"/>
+<text x="946.0" y="102" font-size="14" font-weight="600" fill="#17202a" text-anchor="middle">Nó k3d-aps-agent-0</text>
+<text x="946.0" y="120" font-size="11.5" fill="#5f6b7a" text-anchor="middle">nó de trabalho</text>
+<rect x="1066" y="78" width="216" height="728" rx="8" fill="#f3f5f8" stroke="#c9d1da"/>
+<text x="1174.0" y="102" font-size="14" font-weight="600" fill="#17202a" text-anchor="middle">Nó k3d-aps-agent-1</text>
+<text x="1174.0" y="120" font-size="11.5" fill="#5f6b7a" text-anchor="middle">nó de trabalho</text>
+<rect x="20" y="256.0" width="104" height="124" rx="8" fill="#ffffff" stroke="#17202a" stroke-width="1.3"/>
+<text x="72" y="288.0" font-size="13" font-weight="600" fill="#17202a" text-anchor="middle">Navegador</text>
+<text x="72" y="305.0" font-size="13" font-weight="600" fill="#17202a" text-anchor="middle">e gerador</text>
+<text x="72" y="322.0" font-size="13" font-weight="600" fill="#17202a" text-anchor="middle">de carga</text>
+<text x="72" y="350.0" font-size="11" fill="#5f6b7a" text-anchor="middle">fora do cluster</text>
+<text x="72" y="366.0" font-size="11" fill="#5f6b7a" text-anchor="middle" font-family="Consolas, Menlo, monospace">localhost:8081</text>
+<line x1="124" y1="318.0" x2="140" y2="318.0" stroke="#5f6b7a" stroke-width="1.5" marker-end="url(#seta)"/>
+<rect x="142" y="92" width="140" height="388" rx="8" fill="#eef2f6" stroke="#17202a" stroke-width="1.3"/>
+<text x="212.0" y="116" font-size="14" font-weight="600" fill="#17202a" text-anchor="middle">Ingress</text>
+<text x="212.0" y="133" font-size="11.5" fill="#5f6b7a" text-anchor="middle">gateway (Traefik)</text>
+<text x="212.0" y="149" font-size="11.5" fill="#5f6b7a" text-anchor="middle">roteia por caminho</text>
+<line x1="282" y1="192.0" x2="298" y2="192.0" stroke="#5f6b7a" stroke-width="1.5" marker-end="url(#seta)"/>
+<line x1="580" y1="192.0" x2="1076" y2="192.0" stroke="#5b6b7d" stroke-width="2"/>
+<line x1="282" y1="276.0" x2="298" y2="276.0" stroke="#5f6b7a" stroke-width="1.5" marker-end="url(#seta)"/>
+<line x1="580" y1="276.0" x2="848" y2="276.0" stroke="#0f7b6c" stroke-width="2"/>
+<line x1="282" y1="360.0" x2="298" y2="360.0" stroke="#5f6b7a" stroke-width="1.5" marker-end="url(#seta)"/>
+<line x1="580" y1="360.0" x2="1076" y2="360.0" stroke="#1f6fb5" stroke-width="2"/>
+<line x1="282" y1="444.0" x2="298" y2="444.0" stroke="#5f6b7a" stroke-width="1.5" marker-end="url(#seta)"/>
+<line x1="580" y1="444.0" x2="848" y2="444.0" stroke="#b4581a" stroke-width="2"/>
+<line x1="580" y1="590.0" x2="1076" y2="590.0" stroke="#5a4fb0" stroke-width="2"/>
+<line x1="580" y1="674.0" x2="848" y2="674.0" stroke="#b3323a" stroke-width="2"/>
+<line x1="580" y1="758.0" x2="848" y2="758.0" stroke="#8a6a00" stroke-width="2"/>
+<rect x="300" y="160" width="280" height="64" rx="6" fill="#ffffff" stroke="#5b6b7d" stroke-width="1.6"/>
+<rect x="300" y="160" width="6" height="64" fill="#5b6b7d"/>
+<text x="316" y="183.0" font-size="12.5" font-weight="600" fill="#17202a">Service web-client · ClusterIP :80</text>
+<text x="316" y="199.0" font-size="11.5" fill="#5f6b7a">Deployment · 2 réplicas</text>
+<rect x="150" y="166.0" width="124" height="18" rx="4" fill="#ffffff" stroke="#c9d1da"/>
+<text x="212.0" y="179.0" font-size="11" fill="#17202a" text-anchor="middle" font-family="Consolas, Menlo, monospace">/</text>
+<rect x="620" y="175.0" width="196" height="34" rx="5" fill="#5b6b7d"/>
+<text x="629" y="189.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …658c54cf49-xfk8m</text>
+<text x="629" y="203.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.2.15</text>
+<rect x="1076" y="175.0" width="196" height="34" rx="5" fill="#5b6b7d"/>
+<text x="1085" y="189.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …658c54cf49-4rnjz</text>
+<text x="1085" y="203.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.1.20</text>
+<rect x="300" y="244" width="280" height="64" rx="6" fill="#ffffff" stroke="#0f7b6c" stroke-width="1.6"/>
+<rect x="300" y="244" width="6" height="64" fill="#0f7b6c"/>
+<text x="316" y="267.0" font-size="12.5" font-weight="600" fill="#17202a">Service air-quality-api · ClusterIP :80</text>
+<text x="316" y="283.0" font-size="11.5" fill="#5f6b7a">Deployment · HPA 2 a 10 (CPU 50%)</text>
+<rect x="150" y="250.0" width="124" height="18" rx="4" fill="#ffffff" stroke="#c9d1da"/>
+<text x="212.0" y="263.0" font-size="11" fill="#17202a" text-anchor="middle" font-family="Consolas, Menlo, monospace">/air-quality</text>
+<rect x="620" y="259.0" width="196" height="34" rx="5" fill="#0f7b6c"/>
+<text x="629" y="273.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …68cd867567-kxx82</text>
+<text x="629" y="287.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.2.7</text>
+<rect x="848" y="259.0" width="196" height="34" rx="5" fill="#0f7b6c"/>
+<text x="857" y="273.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …68cd867567-x44wj</text>
+<text x="857" y="287.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.0.15</text>
+<rect x="300" y="328" width="280" height="64" rx="6" fill="#ffffff" stroke="#1f6fb5" stroke-width="1.6"/>
+<rect x="300" y="328" width="6" height="64" fill="#1f6fb5"/>
+<text x="316" y="351.0" font-size="12.5" font-weight="600" fill="#17202a">Service flooding-api · ClusterIP :80</text>
+<text x="316" y="367.0" font-size="11.5" fill="#5f6b7a">Deployment · 2 réplicas</text>
+<rect x="150" y="334.0" width="124" height="18" rx="4" fill="#ffffff" stroke="#c9d1da"/>
+<text x="212.0" y="347.0" font-size="11" fill="#17202a" text-anchor="middle" font-family="Consolas, Menlo, monospace">/flooding</text>
+<rect x="620" y="343.0" width="196" height="34" rx="5" fill="#1f6fb5"/>
+<text x="629" y="357.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …64c64bf-9vtbf</text>
+<text x="629" y="371.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.2.8</text>
+<rect x="1076" y="343.0" width="196" height="34" rx="5" fill="#1f6fb5"/>
+<text x="1085" y="357.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …64c64bf-rq55w</text>
+<text x="1085" y="371.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.1.35</text>
+<rect x="300" y="412" width="280" height="64" rx="6" fill="#ffffff" stroke="#b4581a" stroke-width="1.6"/>
+<rect x="300" y="412" width="6" height="64" fill="#b4581a"/>
+<text x="316" y="435.0" font-size="12.5" font-weight="600" fill="#17202a">Service thermal-inversion-api · ClusterIP :80</text>
+<text x="316" y="451.0" font-size="11.5" fill="#5f6b7a">Deployment · 2 réplicas</text>
+<rect x="150" y="418.0" width="124" height="18" rx="4" fill="#ffffff" stroke="#c9d1da"/>
+<text x="212.0" y="431.0" font-size="11" fill="#17202a" text-anchor="middle" font-family="Consolas, Menlo, monospace">/thermal-inversion</text>
+<rect x="620" y="427.0" width="196" height="34" rx="5" fill="#b4581a"/>
+<text x="629" y="441.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …7467c478df-kffl8</text>
+<text x="629" y="455.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.2.9</text>
+<rect x="848" y="427.0" width="196" height="34" rx="5" fill="#b4581a"/>
+<text x="857" y="441.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …7467c478df-72cpz</text>
+<text x="857" y="455.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.0.6</text>
+<rect x="300" y="558" width="280" height="64" rx="6" fill="#ffffff" stroke="#5a4fb0" stroke-width="1.6"/>
+<rect x="300" y="558" width="6" height="64" fill="#5a4fb0"/>
+<text x="316" y="581.0" font-size="12.5" font-weight="600" fill="#17202a">Service postgres · headless :5432</text>
+<text x="316" y="597.0" font-size="11.5" fill="#5f6b7a">StatefulSet · 1 réplica</text>
+<text x="316" y="612.0" font-size="11.5" fill="#5f6b7a">PVC dados-postgres-0 · 1 GiB</text>
+<rect x="1076" y="573.0" width="196" height="34" rx="5" fill="#5a4fb0"/>
+<text x="1085" y="587.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">postgres-0</text>
+<text x="1085" y="601.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.1.15</text>
+<rect x="300" y="642" width="280" height="64" rx="6" fill="#ffffff" stroke="#b3323a" stroke-width="1.6"/>
+<rect x="300" y="642" width="6" height="64" fill="#b3323a"/>
+<text x="316" y="665.0" font-size="12.5" font-weight="600" fill="#17202a">Service redis · ClusterIP :6379</text>
+<text x="316" y="681.0" font-size="11.5" fill="#5f6b7a">Deployment · 1 réplica</text>
+<text x="316" y="696.0" font-size="11.5" fill="#5f6b7a">sem volume (cache descartável)</text>
+<rect x="848" y="657.0" width="196" height="34" rx="5" fill="#b3323a"/>
+<text x="857" y="671.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">pod …86f665b87d-jfrtr</text>
+<text x="857" y="685.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.0.4</text>
+<rect x="300" y="726" width="280" height="64" rx="6" fill="#ffffff" stroke="#8a6a00" stroke-width="1.6"/>
+<rect x="300" y="726" width="6" height="64" fill="#8a6a00"/>
+<text x="316" y="749.0" font-size="12.5" font-weight="600" fill="#17202a">Service rabbitmq · headless :5672</text>
+<text x="316" y="765.0" font-size="11.5" fill="#5f6b7a">StatefulSet · 1 réplica</text>
+<text x="316" y="780.0" font-size="11.5" fill="#5f6b7a">PVC dados-rabbitmq-0 · 1 GiB</text>
+<rect x="848" y="741.0" width="196" height="34" rx="5" fill="#8a6a00"/>
+<text x="857" y="755.0" font-size="11.5" font-weight="600" fill="#fff" font-family="Consolas, Menlo, monospace">rabbitmq-0</text>
+<text x="857" y="769.0" font-size="10.5" fill="#fff" fill-opacity=".9" font-family="Consolas, Menlo, monospace">10.42.0.14</text>
+<rect x="300" y="494" width="982" height="46" rx="6" fill="#ffffff" stroke="#c9d1da" stroke-dasharray="5 4"/>
+<text x="316" y="513" font-size="12.5" font-weight="600" fill="#17202a">Dependências — só acessíveis de dentro do cluster, pelo nome DNS do Service</text>
+<text x="316" y="530" font-size="11.5" fill="#5f6b7a">Os pods das três APIs chamam: postgres:5432 (leituras e alertas) · redis:6379 (cache das consultas agregadas) · rabbitmq:5672 (fila dos alertas)</text>
+<path d="M300,517.0 H278 V758.0 H298" fill="none" stroke="#5f6b7a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+<line x1="278" y1="590.0" x2="298" y2="590.0" stroke="#5f6b7a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+<line x1="278" y1="674.0" x2="298" y2="674.0" stroke="#5f6b7a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+<line x1="20" y1="832" x2="60" y2="832" stroke="#5f6b7a" stroke-width="1.5" marker-end="url(#seta)"/>
+<text x="68" y="836" font-size="12" fill="#17202a">requisição HTTP de fora, roteada pelo Ingress</text>
+<line x1="360" y1="832" x2="400" y2="832" stroke="#17202a" stroke-width="2"/>
+<text x="408" y="836" font-size="12" fill="#17202a">o Service distribui entre os pods prontos (na cor do serviço)</text>
+<line x1="790" y1="832" x2="830" y2="832" stroke="#5f6b7a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+<text x="838" y="836" font-size="12" fill="#17202a">chamada interna das APIs às dependências</text>
+<text x="20" y="860" font-size="12" fill="#5f6b7a">ConfigMap aps-config (hosts, tempo do cache, limites de alerta) e Secret banco-credenciais (usuários e senhas) entram nos pods como variáveis de ambiente.</text>
+</svg>

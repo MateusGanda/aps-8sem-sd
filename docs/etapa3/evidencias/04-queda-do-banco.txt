@@ -1,0 +1,56 @@
+# Passo 8 - queda do banco: readiness tira as APIs do balanceamento sem reiniciar; dados preservados
+# Coletado em 2026-10-10 01:55:18 (cluster k3d 'aps', namespace 'aps')
+
+$ curl -s 'http://localhost:8081/air-quality/api/v1/air-quality/particulate?stationId=EST-EVID-01'   # antes: 3 leituras gravadas
+[{"id":306,"stationId":"EST-EVID-01","sensorId":"EST-EVID-01-PM","areaId":"EVIDENCIA","pm25":13.5,"pm10":23,"timestamp":"2026-10-10T04:55:19.861442+00:00"},{"id":305,"stationId":"EST-EVID-01","sensorId":"EST-EVID-01-PM","areaId":"EVIDENCIA","pm25":12.5,"pm10":22,"timestamp":"2026-10-10T04:55:18.958555+00:00"},{"id":304,"stationId":"EST-EVID-01","sensorId":"EST-EVID-01-PM","areaId":"EVIDENCIA","pm25":11.5,"pm10":21,"timestamp":"2026-10-10T04:55:18.843016+00:00"}]
+$ kubectl scale statefulset postgres -n aps --replicas=0
+statefulset.apps/postgres scaled
+
+# 25 segundos depois:
+$ kubectl get pods -n aps
+NAME                                     READY   STATUS    RESTARTS   AGE
+air-quality-api-68cd867567-kxx82         0/1     Running   0          8m12s
+air-quality-api-68cd867567-lk27f         0/1     Running   0          45s
+air-quality-api-68cd867567-x44wj         0/1     Running   0          4m56s
+air-quality-api-68cd867567-xkplj         0/1     Running   0          45s
+flooding-api-64c64bf-5cfdk               0/1     Running   0          65s
+flooding-api-64c64bf-9vtbf               0/1     Running   0          8m12s
+rabbitmq-0                               1/1     Running   0          6m18s
+redis-86f665b87d-jfrtr                   1/1     Running   0          8m12s
+thermal-inversion-api-7467c478df-72cpz   0/1     Running   0          8m12s
+thermal-inversion-api-7467c478df-kffl8   0/1     Running   0          8m12s
+web-client-77b7d6864b-bhn8t              1/1     Running   0          8m11s
+web-client-77b7d6864b-zrffz              1/1     Running   0          8m11s
+
+$ curl -s -o /dev/null -w '%{http_code}\n' 'http://localhost:8081/air-quality/api/v1/air-quality/particulate'
+503
+
+$ kubectl exec -n aps deploy/flooding-api -- wget -q -O - http://localhost:8080/health/live   # liveness continua respondendo
+Healthy
+$ kubectl scale statefulset postgres -n aps --replicas=1
+statefulset.apps/postgres scaled
+
+# banco de volta:
+$ kubectl get pods -n aps
+NAME                                     READY   STATUS    RESTARTS   AGE
+air-quality-api-68cd867567-kxx82         1/1     Running   0          8m21s
+air-quality-api-68cd867567-lk27f         1/1     Running   0          54s
+air-quality-api-68cd867567-x44wj         1/1     Running   0          5m5s
+air-quality-api-68cd867567-xkplj         1/1     Running   0          54s
+flooding-api-64c64bf-5cfdk               1/1     Running   0          74s
+flooding-api-64c64bf-9vtbf               1/1     Running   0          8m21s
+postgres-0                               1/1     Running   0          7s
+rabbitmq-0                               1/1     Running   0          6m27s
+redis-86f665b87d-jfrtr                   1/1     Running   0          8m21s
+thermal-inversion-api-7467c478df-72cpz   1/1     Running   0          8m21s
+thermal-inversion-api-7467c478df-kffl8   1/1     Running   0          8m21s
+web-client-77b7d6864b-bhn8t              1/1     Running   0          8m20s
+web-client-77b7d6864b-zrffz              1/1     Running   0          8m20s
+
+$ curl -s 'http://localhost:8081/air-quality/api/v1/air-quality/particulate?stationId=EST-EVID-01'   # depois: as mesmas 3 leituras
+[{"id":306,"stationId":"EST-EVID-01","sensorId":"EST-EVID-01-PM","areaId":"EVIDENCIA","pm25":13.5,"pm10":23,"timestamp":"2026-10-10T04:55:19.861442+00:00"},{"id":305,"stationId":"EST-EVID-01","sensorId":"EST-EVID-01-PM","areaId":"EVIDENCIA","pm25":12.5,"pm10":22,"timestamp":"2026-10-10T04:55:18.958555+00:00"},{"id":304,"stationId":"EST-EVID-01","sensorId":"EST-EVID-01-PM","areaId":"EVIDENCIA","pm25":11.5,"pm10":21,"timestamp":"2026-10-10T04:55:18.843016+00:00"}]
+$ kubectl get pvc -n aps
+NAME               STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+dados-postgres-0   Bound    pvc-eb3a9e74-5113-414e-bd42-133ddfe72b64   1Gi        RWO            local-path     <unset>                 8m22s
+dados-rabbitmq-0   Bound    pvc-0a037d2c-6d13-45c6-9db1-37bd814e172d   1Gi        RWO            local-path     <unset>                 6m28s
+
