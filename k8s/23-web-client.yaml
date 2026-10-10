@@ -28,8 +28,9 @@ spec:
           resources:
             requests: { cpu: 20m, memory: 16Mi }
             limits:   { cpu: 100m, memory: 64Mi }
+          # Liveness: só "o nginx está de pé?" (porta aberta). Readiness: "a página é entregue?"
           livenessProbe:
-            httpGet: { path: /, port: 80 }
+            tcpSocket: { port: 80 }
             periodSeconds: 10
           readinessProbe:
             httpGet: { path: /, port: 80 }
