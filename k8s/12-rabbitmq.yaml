@@ -50,12 +50,12 @@ spec:
           volumeMounts:
             - name: dados
               mountPath: /var/lib/rabbitmq
-          # O RabbitMQ demora a subir: a startup dá até 2 min antes de as outras probes valerem
+          # O RabbitMQ demora a subir: a startup dá até 2 min antes de as outras probes valerem.
+          # Aqui é só a porta, de propósito: rodar o rabbitmq-diagnostics antes de o servidor
+          # criar o cookie do Erlang faz a primeira partida falhar.
           startupProbe:
-            exec:
-              command: ["rabbitmq-diagnostics", "-q", "ping"]
+            tcpSocket: { port: 5672 }
             periodSeconds: 5
-            timeoutSeconds: 10
             failureThreshold: 24
           livenessProbe:
             exec:
